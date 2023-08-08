@@ -99,6 +99,17 @@ class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBase
     }
   }
 
+  @ReactMethod
+  fun enableTorch(viewTag: Int,status:Boolean, promise: Promise){
+      coroutineScope.launch{
+          withPromise(promise){
+              val view = findCameraView(viewTag)
+              view.enableTorch(status)
+              return@withPromise null
+           }
+       }
+   }
+
   @Suppress("unused")
   @ReactMethod
   fun takeSnapshot(viewTag: Int, options: ReadableMap, promise: Promise) {
