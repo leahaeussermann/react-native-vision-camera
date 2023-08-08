@@ -103,6 +103,18 @@ export class Camera extends React.PureComponent<CameraProps> {
     return nodeHandle;
   }
 
+  /**
+   +   * Control the cameras torch by given status.
+   +   * @param {Boolean} status
+   +   */
+  public async enableTorch(status: Boolean): Promise<void> {
+    try {
+      return await CameraModule.enableTorch(this.handle, status);
+    } catch (e) {
+      throw tryParseNativeCameraError(e);
+    }
+  }
+
   //#region View-specific functions (UIViewManager)
   /**
    * Take a single photo and write it's content to a temporary file.
