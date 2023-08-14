@@ -18,14 +18,8 @@ extension CameraView {
         throw CameraError.device(DeviceError.focusNotSupported)
       }
 
-      var normalizedPoint: CGPoint
-      if let previewView = previewView as? PreviewView {
-        // previewView is of type PreviewView can use the built in captureDevicePointConverted
-        normalizedPoint = previewView.videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: point)
-      } else {
-        normalizedPoint = captureDevicePointConverted(fromLayerPoint: point)
-      }
-
+        let normalizedPoint = self.videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: point)
+      
       do {
         try device.lockForConfiguration()
 
@@ -34,7 +28,7 @@ extension CameraView {
 
         if device.isExposurePointOfInterestSupported {
           device.exposurePointOfInterest = normalizedPoint
-          device.exposureMode = .autoFocus
+          device.exposureMode = .autoExpose
         }
 
         // Enable subject area change monitoring
