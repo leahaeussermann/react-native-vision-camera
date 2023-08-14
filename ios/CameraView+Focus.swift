@@ -18,8 +18,12 @@ extension CameraView {
         throw CameraError.device(DeviceError.focusNotSupported)
       }
 
-      let normalizedPoint = self.videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: point)
-
+      var normalizedPoint = captureDevicePointConverted(fromLayerPoint: point)
+      if let previewView = previewView as? PreviewView {
+        // previewView is of type PreviewView can use the built in captureDevicePointConverted
+        normalizedPoint = previewView.videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: point)
+      }
+      
       do {
         try device.lockForConfiguration()
 
