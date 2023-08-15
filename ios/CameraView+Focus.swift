@@ -28,7 +28,7 @@ extension CameraView {
 
         if device.isExposurePointOfInterestSupported {
           device.exposurePointOfInterest = normalizedPoint
-          device.exposureMode = .autoExpose
+          device.exposureMode = .continuousAutoExposure
         }
 
         // Enable subject area change monitoring
