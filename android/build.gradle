@@ -83,14 +83,12 @@ buildscript {
     classpath 'de.undercouch:gradle-download-task:4.1.2'
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
   }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['VisionCamera_' + name]
@@ -110,18 +108,18 @@ def resolveBuildType() {
     return buildType
 }
 
-// plugin.js file only exists since REA v2.
-def hasReanimated2 = file("${nodeModules}/react-native-reanimated/plugin.js").exists()
+// WorkletRuntime.h file only exists since Reanimated 3.5.0.
+def hasReanimated3 = file("${nodeModules}/react-native-reanimated/Common/cpp/ReanimatedRuntime/WorkletRuntime.h").exists()
 def disableFrameProcessors = rootProject.ext.has("disableFrameProcessors") ? rootProject.ext.get("disableFrameProcessors").asBoolean() : false
-def ENABLE_FRAME_PROCESSORS = hasReanimated2 && !disableFrameProcessors
+def ENABLE_FRAME_PROCESSORS = hasReanimated3 && !disableFrameProcessors
 
 if (ENABLE_FRAME_PROCESSORS) {
   logger.warn("VisionCamera: Frame Processors are enabled! Building C++ part...")
 } else {
   if (disableFrameProcessors) {
     logger.warn("VisionCamera: Frame Processors are disabled because the user explicitly disabled it ('disableFrameProcessors=${disableFrameProcessors}'). C++ part will not be built.")
-  } else if (!hasReanimated2) {
-    logger.warn("VisionCamera: Frame Processors are disabled because REA v2 does not exist. C++ part will not be built.")
+  } else if (!hasReanimated3) {
+    logger.warn("VisionCamera: Frame Processors are disabled because Reanimated 3.5.0+ is not installed. C++ part will not be built.")
   }
 }
 
@@ -303,10 +301,6 @@ dependencies {
       def jscAAR = fileTree("${nodeModules}/jsc-android/dist/org/webkit/android-jsc").matching({ it.include "**/**/*.aar" }).singleFile
       extractJNI(files(rnAAR, jscAAR))
     }
-
-    def jsEngine = FOR_HERMES ? "hermes" : "jsc"
-    def reaAAR = "${nodeModules}/react-native-reanimated/android/react-native-reanimated-${REACT_NATIVE_VERSION}-${jsEngine}.aar"
-    extractJNI(files(reaAAR))
   }
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
