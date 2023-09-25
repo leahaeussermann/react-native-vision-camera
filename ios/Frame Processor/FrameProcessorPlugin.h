@@ -45,15 +45,15 @@
  * Same as VISION_EXPORT_FRAME_PROCESSOR, but uses __attribute__((constructor)) for
  * registration. Useful for registering swift classes that forbids use of +(void)load.
  */
-#define VISION_EXPORT_SWIFT_FRAME_PROCESSOR(name, objc_name) \
+#define VISION_EXPORT_SWIFT_FRAME_PROCESSOR(name, objc_name)                        \
 objc_name : NSObject<FrameProcessorPluginBase>                                      \
 @end                                                                                \
                                                                                     \
-@interface objc_name (FrameProcessorPlugin)                                         \
+@interface objc_name (FrameProcessorPlugin) <FrameProcessorPluginBase>              \
 @end                                                                                \
 @implementation objc_name (FrameProcessorPlugin)                                    \
                                                                                     \
-+(void)load                                                                          \
+__attribute__((constructor)) static void VISION_CONCAT(initialize_, objc_name)()    \
 {                                                                                   \
   [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"__" @ #name callback:^id(Frame* frame, NSArray<id>* args) {    \
     return [objc_name callback:frame withArgs:args];                               \
